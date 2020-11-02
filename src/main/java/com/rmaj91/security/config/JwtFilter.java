@@ -46,9 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         String token = header.replace(TOKEN_PREFIX, EMPTY);
 
-        Claims claims = jwtUtil.getAllClaimsFromToken(token);
-        String subject = claims.getSubject();
         try {
+            Claims claims = jwtUtil.getAllClaimsFromToken(token);
+            String subject = claims.getSubject();
             if (!userRepository.existsByUsername(subject)) {
                 String message = "User " + subject + " not found.";
                 log.error(message);

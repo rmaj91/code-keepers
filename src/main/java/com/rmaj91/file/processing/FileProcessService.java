@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
@@ -31,17 +32,20 @@ public class FileProcessService {
     public static final String MD5 = "MD5";
 
 
-    public void processFile(FileProcessRequest editFileInfo) {
+    // na runtime exceptionie
+    @Transactional
+    public String processFile(FileProcessRequest editFileInfo) {
         String hash = fileUtils.createFileHash(editFileInfo.getFilePath(), MD5);
         UUID uuid = UUID.randomUUID();
         persistProcessingFileInfo(editFileInfo.getFilePath(), MD5, hash, uuid);
         createModifiedFile(editFileInfo, hash, uuid);
+        return editFileInfo.getFilePath();
     }
 
-    private void createModifiedFile(FileProcessRequest editFileInfo, String hash, UUID uuid) {
-        try (PdfDocument pdfDoc = fileUtils.getPdfDocument(editFileInfo.getFilePath(), editFileInfo.getOutPath())) {
+    private void createModifiedFile(FileProcessRequest fileProcessRequest, String hash, UUID uuid) {
+        try (PdfDocument pdfDoc = fileUtils.getPdfDocument(fileProcessRequest)) {
             Document document = new Document(pdfDoc);
-            Paragraph paragraph = createParagraph(hash, uuid, editFileInfo.getCertificate());
+            Paragraph paragraph = createParagraph(hash, uuid, fileProcessRequest.getCertificate());
             pdfDoc.addNewPage(new PageSize(pdfDoc.getLastPage().getPageSize()));
             addParagraphOnLastPage(paragraph, document);
             document.close();

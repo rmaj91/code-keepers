@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import static java.nio.file.Files.exists;
@@ -26,7 +27,7 @@ public class FileProcessRequestValidator {
         log.info("validation started");
         certificateService.validateCertificate(fileProcessRequest.getCertificate());
         validateFileSize(fileProcessRequest.getFilePath());
-        validateOutputPath(fileProcessRequest.getOutPath());
+        validateOutputPath(fileProcessRequest);
         log.info("validating ended");
     }
 
@@ -39,9 +40,11 @@ public class FileProcessRequestValidator {
         }
     }
 
-    protected void validateOutputPath(String filePath) {
-        Path path = Path.of(filePath);
-        if (isDirectory(path) && exists(path)) {
+    protected void validateOutputPath(FileProcessRequest fileProcessRequest) {
+        String separator = FileSystems.getDefault().getSeparator();
+        String fileName = Path.of(fileProcessRequest.getFilePath()).getFileName().toString();
+        Path outFilePath = Path.of(fileProcessRequest.getOutPath() + separator + fileName);
+        if (!isDirectory(outFilePath) && exists(outFilePath)) {
             log.error("Validation failed");
             throw new RuntimeException();
         }

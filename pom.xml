@@ -97,9 +97,9 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>com.nickwongdev</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.11</version>
+				<version>1.12.6</version>
 				<configuration>
 					<complianceLevel>11</complianceLevel>
 					<source>11</source>
@@ -107,14 +107,19 @@
 					<showWeaveInfo>true</showWeaveInfo>
 					<verbose>true</verbose>
 					<Xlint>ignore</Xlint>
-					<encoding>UTF-8 </encoding>
+					<encoding>UTF-8</encoding>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+					<showWeaveInfo>true</showWeaveInfo>
 				</configuration>
 				<executions>
 					<execution>
 						<goals>
-							<!-- use this goal to weave all your main classes -->
 							<goal>compile</goal>
-							<!-- use this goal to weave all your test classes -->
 							<goal>test-compile</goal>
 						</goals>
 					</execution>

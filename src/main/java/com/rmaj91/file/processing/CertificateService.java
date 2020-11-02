@@ -56,15 +56,19 @@ public class CertificateService {
 
     private PublicKey fetchCaPublicKey(X509Certificate certificate) {
         PublicKey publicKey;
-        if (certificate.getSubjectDN().equals(certificate.getIssuerDN())) {
+        if (certificate.getSubjectDN().equals(certificate.getIssuerDN()) && keyCertSignBit(certificate)) {
             publicKey = certificate.getPublicKey();
         } else {
-            publicKey = getCaCertificate(certificate.getIssuerDN());
+            publicKey = getCaCertificate(certificate);
         }
         return publicKey;
     }
 
-    private PublicKey getCaCertificate(Principal issuerDN) {
+    private boolean keyCertSignBit(X509Certificate certificate) {
+        return certificate.getKeyUsage()[5];
+    }
+
+    private PublicKey getCaCertificate(X509Certificate certificate) {
         // todo to implement
         return null;
     }

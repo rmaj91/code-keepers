@@ -1,7 +1,9 @@
 package com.rmaj91.file.processing;
 
 import com.rmaj91.file.processing.domain.FileProcessRequest;
+import com.rmaj91.file.processing.domain.Message;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +18,9 @@ public class FileController {
     private final FileProcessRequestValidator fileProcessRequestValidator;
 
     @PostMapping("/process")
-    public void processFile(@RequestBody FileProcessRequest request) {
+    public ResponseEntity<Message> processFile(@RequestBody FileProcessRequest request) {
         fileProcessRequestValidator.validate(request);
-        fileProcessService.processFile(request);
+        String processedFile = fileProcessService.processFile(request);
+        return ResponseEntity.ok(Message.of("Sucessfully processed file: " + processedFile));
     }
 }
